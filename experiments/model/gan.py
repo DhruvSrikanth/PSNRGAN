@@ -145,7 +145,7 @@ class VanillaGAN(object):
 
         # Sample noise as generator input
         z = self.sample_noise(batch_size=real_samples.shape[0])
-        
+         
         fake_loss = discriminator_loss_fn(self.discriminator(self.generator(z).detach()), fake_labels)
 
         # Compute total loss

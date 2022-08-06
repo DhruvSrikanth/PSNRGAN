@@ -19,6 +19,7 @@ config = {
         'discriminator blocks' : 3, 
     }, 
     'hyperparameters' : {
+        'loss' : 'BCE',
         'latent dimension': 100,
         'learning rate': 0.0002, 
         'beta1': 0.5,

@@ -1,6 +1,6 @@
-# Vanilla GAN Experiments Package
+# Testing PSNR Loss with Vanilla GAN
 
-Simulate experiments with a Vanilla GAN architecture package.
+Simulate experiments with a different loss functions on the Vanilla GAN architecture.
 
 <p align="center">
     <a href="https://www.python.org/">
@@ -26,7 +26,7 @@ direnv allow
 make install
 ```
 
-## Using the Vanilla GAN Experiments package
+## Testing PSNR Loss with Vanilla GAN against other losses (MSE, BCE)
 
 For **every** experiment run:
 
