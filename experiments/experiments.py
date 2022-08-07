@@ -61,28 +61,17 @@ class Experiments():
         if verbose:
             print(f"Given below is the model architecture: \n\t{model.generator}\n\t{model.discriminator}\n")
         
-        loss_choice = self.config.hyperparameters['loss']
-        loss_choice = loss_choice.lower()
-        if loss_choice == 'psnr':
-            loss = PSNRLoss()
-        elif loss_choice == 'bce':
-            loss = torch.nn.BCELoss()
-        elif loss_choice == 'mse':
-            loss = torch.nn.MSELoss()
-        else:
-            raise ValueError(f"Invalid loss choice: {loss_choice}. Valid choices are: 'psnr', 'bce', 'mse'.")
-
         # Define the strategy for training the generator
         generator_stategy = {
-            'optimizer': torch.optim.Adam(model.generator.parameters(), lr=self.config.hyperparameters['learning rate'], betas=(self.config.hyperparameters['beta1'], self.config.hyperparameters['beta2'])), 
-            'criterion': loss,
+            'optimizer': torch.optim.RMSprop(model.generator.parameters(), lr=self.config.hyperparameters['learning rate']), 
+            'criterion': torch.mean,
             'epochs': self.config.hyperparameters['generator epochs'],
         }
 
         # Define the strategy for training the discriminator
         discriminator_strategy = {
             'optimizer': torch.optim.Adam(model.discriminator.parameters(), lr=self.config.hyperparameters['learning rate'], betas=(self.config.hyperparameters['beta1'], self.config.hyperparameters['beta2'])),
-            'criterion': loss,
+            'criterion': PSNRLoss(inverse=True),
             'epochs': self.config.hyperparameters['discriminator epochs'],
         }
         

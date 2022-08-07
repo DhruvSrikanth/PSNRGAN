@@ -29,7 +29,6 @@ class Config(object):
                 'discriminator blocks', 
             ], 
             'hyperparameters' : [
-                'loss', 
                 'latent dimension', 
                 'learning rate', 
                 'beta1', 

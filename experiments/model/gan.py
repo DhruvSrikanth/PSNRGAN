@@ -139,17 +139,22 @@ class VanillaGAN(object):
         # Adversarial ground truths
         valid_labels = self.get_validity_labels(batch_size=batch_size, type='real')
         fake_labels = self.get_validity_labels(batch_size=real_samples.shape[0], type='fake')
-
-        # Measure discriminator's ability to classify real from generated samples
-        real_loss = discriminator_loss_fn(self.discriminator(real_samples), valid_labels)
-
         # Sample noise as generator input
         z = self.sample_noise(batch_size=real_samples.shape[0])
-         
-        fake_loss = discriminator_loss_fn(self.discriminator(self.generator(z).detach()), fake_labels)
+        
+
+        # Measure discriminator's ability to classify real from generated samples
+        real_loss = discriminator_loss_fn(noisy_signal=self.generator(z).detach(), true_signal=real_samples, noisy_label=self.discriminator(real_samples), true_label=valid_labels)
+        
+        
+        fake_loss = discriminator_loss_fn(noisy_signal=self.generator(z).detach(), true_signal=real_samples, noisy_label=self.discriminator(self.generator(z).detach()), true_label=fake_labels)
 
         # Compute total loss
         d_loss = (real_loss + fake_loss) / 2
+
+        # Clip the gradients
+        self.clip_weights(model=self.discriminator, clip_value=1.0)
+
         # Backpropagate
         d_loss.backward()
 
@@ -215,10 +220,13 @@ class VanillaGAN(object):
         valid_labels = self.get_validity_labels(batch_size=batch_size, type='real')
 
         # Loss measures generator's ability to fool the discriminator
-        g_loss = generator_loss_fn(self.discriminator(self.generator(z)), valid_labels)
+        g_loss = -generator_loss_fn(self.discriminator(self.generator(z)))
         
         # Backward pass
         g_loss.backward()
+
+        # Clip the gradients
+        self.clip_weights(model=self.generator, clip_value=1.0)
 
         # Update the parameters of the generator
         generator_optimizer.step()
@@ -249,7 +257,18 @@ class VanillaGAN(object):
         running_loss /= l
         
         return running_loss
-
+    
+    def clip_weights(self, clip_value: float, model: nn.Module) -> None:
+        '''
+        Clip the weights of the model.
+        Parameters:
+            clip_value: The value to clip the weights to.
+        Returns:
+            None
+        '''
+        for p in model.parameters():
+            p.data.clamp_(-clip_value, clip_value)
+   
     def get_validity_labels(self, batch_size: int, type: str) -> torch.Tensor:
         '''
         Get the labels for the validity of the samples.

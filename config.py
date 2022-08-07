@@ -6,7 +6,7 @@ config = {
         
         }, 
     'data' : {
-        'batch size': 32,
+        'batch size': 128,
         'num workers': 8, 
         'image shape': (1, 28, 28),
         'train samples': 60000, 
@@ -19,9 +19,8 @@ config = {
         'discriminator blocks' : 3, 
     }, 
     'hyperparameters' : {
-        'loss' : 'BCE',
         'latent dimension': 100,
-        'learning rate': 0.0002, 
+        'learning rate': 0.0005, 
         'beta1': 0.5,
         'beta2': 0.999,
         'epochs': 200, 
